@@ -115,6 +115,8 @@ GEO-XINXIANGMU-00/
     - 一键启动三端 + 整合层(7000) + 跑 `ci_check.ps1`(= `run_all.py --skip-real`),生成 `ci_report.txt`
     - 仅跑门禁(服务已在跑时): `powershell -ExecutionPolicy Bypass -File ci_check.ps1`
     - 前置: 三端(3002/5409/7000)在跑 + `AGNES_API_KEY` 已设(F14/F17 调 LLM 需要)
+  - **零操作自运维(推荐)**: 注册 Windows 定时任务,每日 09:00 自动启动服务+跑门禁:
+    `powershell -ExecutionPolicy Bypass -File install_ci_task.ps1`(任务名 `GEO-DailyCI`,状态见 `Get-ScheduledTask -TaskName GEO-DailyCI`);手动触发 `Start-ScheduledTask -TaskName GEO-DailyCI`
 
 ---
 

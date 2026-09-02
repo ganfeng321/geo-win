@@ -19,6 +19,22 @@ powershell -ExecutionPolicy Bypass -File ci_check.ps1
 
 最近一次运行：**PASS ✓ 8/8 通过，耗时 294.4s**（F8/F14/F11/F12/F13/F17/F19/F7B）。
 
+## 定时自动运行（零操作，推荐）
+已将 `start_and_ci.ps1` 注册为 Windows 定时任务 **GEO-DailyCI**，每日 09:00 自动执行（当前用户登录时运行，无需密码）：
+
+```powershell
+# 安装/重建定时任务（幂等）
+powershell -ExecutionPolicy Bypass -File install_ci_task.ps1
+
+# 手动立即触发一次（验证用）
+Start-ScheduledTask -TaskName "GEO-DailyCI"
+
+# 查看任务状态
+Get-ScheduledTask -TaskName "GEO-DailyCI"
+```
+
+任务行为：先启动三端+整合层（端口已占则跳过，避免多实例冲突），再跑 `ci_check.ps1`，结果写入 `ci_report.txt`。服务常驻场景下每日重复运行安全幂等。
+
 ## 前置依赖（运行前请确认）
 - 发布端 `sau_backend` 在 `127.0.0.1:5409` 运行
 - 整合层 `geo-core` 在 `127.0.0.1:7000` 运行
