@@ -3,13 +3,22 @@ name: GEO 整合层一键回归
 on:
   push:
     branches: [main]
-  pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   regression:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug env
+        run: |
+          echo "OS: $(uname -a)"
+          echo "python: $(which python || echo none)"
+          python3 --version || echo "no python3"
+          echo "PWD: $PWD"
+
       - name: Checkout
         uses: actions/checkout@v4
 
