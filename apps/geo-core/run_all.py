@@ -13,10 +13,13 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 # 跨平台 venv 解释器: Windows 用 Scripts/python.exe, Linux/macOS 用 bin/python
+# 若 venv 不存在(如 CI 直接用系统 python), 回退到当前解释器
 if (HERE / "venv" / "Scripts" / "python.exe").exists():
     PY = HERE / "venv" / "Scripts" / "python.exe"
-else:
+elif (HERE / "venv" / "bin" / "python").exists():
     PY = HERE / "venv" / "bin" / "python"
+else:
+    PY = Path(sys.executable)
 
 # 全部验收用例(顺序即依赖顺序: 先无副作用的接口/生成, 再真实发布/闭环)
 ALL_SUITES = [

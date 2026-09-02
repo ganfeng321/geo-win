@@ -21,14 +21,13 @@ jobs:
       - name: Install deps
         working-directory: apps/geo-core
         run: |
-          python -m venv venv
-          ./venv/bin/python -m pip install --upgrade pip
-          ./venv/bin/python -m pip install requests psutil
+          python -m pip install --upgrade pip --break-system-packages
+          python -m pip install requests psutil --break-system-packages
 
       - name: Run acceptance (skip real publish)
         working-directory: apps/geo-core
         run: |
-          ./venv/bin/python run_all.py --skip-real --only F8 F12 F13 F19 F7B
+          python run_all.py --skip-real --only F8 F12 F13 F19 F7B
 
       - name: Upload logs on failure
         if: failure()
