@@ -7,7 +7,10 @@ on:
 
 permissions:
   contents: read
-  # 触发 CI：Actions 权限已开启，重新跑回归
+
+# 说明：GitHub 账号(ganfeng321)曾因 billing 被锁定，云端 Actions 暂不可用。
+# 等价验证改用本机 ci_check.ps1（跑 run_all.py --skip-real）。
+# 待 GitHub 账号解锁后，本 workflow 可直接触发，无需改动。
 
 jobs:
   regression:
