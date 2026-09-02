@@ -11,6 +11,11 @@
 GEO-XINXIANGMU-00/
 ├── DEVELOPMENT_RULES.md      # 开发规则(规范/架构约定/二开约束)
 ├── README.md                # 本文件
+├── CI.md                    # CI / 回归验证说明(GitHub 锁定期用本机脚本替代)
+├── ci_check.ps1             # 本机 CI 等价脚本(跑 run_all.py --skip-real)
+├── start_all.ps1            # 一键启动三端(监控/发布)
+├── start_and_ci.ps1         # 一键启动三端 + 整合层 + 跑本机 CI
+├── ci_report.txt            # 最近一次本机 CI 报告
 ├── packages/
 │   ├── geo-monitor/         # Goodie AI-GEO 监测系统(监控端,Next.js+Express+SQLite)
 │   └── geo-publisher/       # MediaPublishPlatform(发布端,Python+Flask+Playwright+Vue3)
@@ -106,6 +111,10 @@ GEO-XINXIANGMU-00/
     - 跳过真实发布: `.\venv\Scripts\python.exe run_all.py --skip-real`
     - 只跑部分: `.\venv\Scripts\python.exe run_all.py --only F8 F14`
   - **每日定时调度**: Windows 任务计划程序触发 `pipeline.py` 的具体 `schtasks` 命令见 `docs/PRD.md` 4.8(F11 AC8.2,可复现)
+  - **本机 CI 等价(推荐日常用)**: `powershell -ExecutionPolicy Bypass -File start_and_ci.ps1`
+    - 一键启动三端 + 整合层(7000) + 跑 `ci_check.ps1`(= `run_all.py --skip-real`),生成 `ci_report.txt`
+    - 仅跑门禁(服务已在跑时): `powershell -ExecutionPolicy Bypass -File ci_check.ps1`
+    - 前置: 三端(3002/5409/7000)在跑 + `AGNES_API_KEY` 已设(F14/F17 调 LLM 需要)
 
 ---
 
@@ -148,3 +157,18 @@ $env:AGNES_API_KEY="你的Key"
 - [x] 统一品牌/账号后台 Web UI(F16) —— 已由 geo-core 统一后台实现(账号管理/监测-品牌管理/一键发布/定时/洞察/闭环/复盘/告警/统一报表导出入口,替代多系统切换)
 - [x] 报表快照与导出(F13) —— CSV + JSON 全量结构化导出,验收通过(见 acceptance_export_test.py)
 - [ ] 监测平台扩展:豆包(配 Key)/Kimi/元宝/通义(真实 endpoint,禁止占位)
+
+---
+
+## 九、CI 与代码托管(2026-09-02)
+
+### 代码托管
+- **Gitee(主,中文/免 VPN)**: `https://gitee.com/ganfeng12300/geo-articles` —— 代码已推送,日常看代码/备份用这个。
+- **GitHub(备)**: `https://github.com/ganfeng321/geo-win` —— 账号 `ganfeng321` 因 billing 被锁定,GitHub Actions 暂不可用;代码已同步,**解锁后 `git push origin main` 即可自动跑 `.github/workflows/regression.yml`,无需改配置**。
+
+### CI 现状
+- GitHub Actions 当前 5s 失败根因:账号 billing 锁定(`account is locked due to a billing issue`),非代码问题。
+- Gitee 个人免费仓库不提供 CI 服务(Gitee Go 为企业/付费)。
+- **因此改用本机 CI 等价方案**(见 `CI.md`): `ci_check.ps1` 在本地提供与云端 Actions 等价的门禁(自动定位 Python → 跑 `run_all.py --skip-real` → 退出码 0=绿 → 生成 `ci_report.txt`)。
+- 最近一次本机验证: **PASS ✓ 8/8 通过(294.4s)**(F8/F14/F11/F12/F13/F17/F19/F7B, `--skip-real` 跳过真实发布 F7/F10/F18)。
+- 完整真实发布回归(不含 `--skip-real`)此前实测 **11/11 通过**,真实发布会真在小红书发帖(属验收必要副作用)。
