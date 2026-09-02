@@ -2,43 +2,34 @@ name: GEO 整合层一键回归
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
 jobs:
   regression:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/geo-core
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: setup-python@v5
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-          cache: pip
 
-      - name: Create venv & install deps
+      - name: Install deps
+        working-directory: apps/geo-core
         run: |
-          python -m venv venv
-          VPY=$( [ -f venv/bin/python ] && echo venv/bin/python || echo venv/Scripts/python.exe )
-          $VPY -m pip install --upgrade pip
-          $VPY -m pip install -r requirements.txt || $VPY -m pip install requests psutil
+          python -m pip install --upgrade pip
+          pip install requests psutil
 
       - name: Run acceptance (skip real publish)
-        env:
-          AGNES_API_KEY: ""
-          AGNES_BASE_URL: ""
-          AGNES_MODEL: ""
+        working-directory: apps/geo-core
         run: |
-          VPY=$( [ -f venv/bin/python ] && echo venv/bin/python || echo venv/Scripts/python.exe )
-          echo "CI 默认跳过依赖 LLM 的套件 (F14/F17)，其余正常跑"
-          $VPY run_all.py --skip-real --only F8 F12 F13 F19 F7B
+          python run_all.py --skip-real --only F8 F12 F13 F19 F7B
 
-      - name: Upload dashboard log on failure
+      - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
