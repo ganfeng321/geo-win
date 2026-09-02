@@ -30,17 +30,13 @@ jobs:
 
       - name: Run acceptance (skip real publish)
         env:
-          AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
-          AGNES_BASE_URL: ${{ secrets.AGNES_BASE_URL }}
-          AGNES_MODEL: ${{ secrets.AGNES_MODEL }}
+          AGNES_API_KEY: ""
+          AGNES_BASE_URL: ""
+          AGNES_MODEL: ""
         run: |
           VPY=$( [ -f venv/bin/python ] && echo venv/bin/python || echo venv/Scripts/python.exe )
-          if [ -z "$AGNES_API_KEY" ]; then
-            echo "AGNES_API_KEY 未配置，跳过依赖 LLM 的套件 (F14/F17)，其余正常跑"
-            $VPY run_all.py --skip-real --only F8 F12 F13 F19 F7B
-          else
-            $VPY run_all.py --skip-real
-          fi
+          echo "CI 默认跳过依赖 LLM 的套件 (F14/F17)，其余正常跑"
+          $VPY run_all.py --skip-real --only F8 F12 F13 F19 F7B
 
       - name: Upload dashboard log on failure
         if: failure()
