@@ -1,0 +1,47 @@
+name: GEO 整合层一键回归
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/geo-core
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+
+      - name: Create venv & install deps
+        run: |
+          python -m venv venv
+          VPY=$( [ -f venv/bin/python ] && echo venv/bin/python || echo venv/Scripts/python.exe )
+          $VPY -m pip install --upgrade pip
+          $VPY -m pip install -r requirements.txt || $VPY -m pip install requests psutil
+
+      - name: Run acceptance (skip real publish)
+        env:
+          AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+          AGNES_BASE_URL: ${{ secrets.AGNES_BASE_URL }}
+          AGNES_MODEL: ${{ secrets.AGNES_MODEL }}
+        run: |
+          VPY=$( [ -f venv/bin/python ] && echo venv/bin/python || echo venv/Scripts/python.exe )
+          $VPY run_all.py --skip-real
+
+      - name: Upload dashboard log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-logs
+          path: |
+            apps/geo-core/dashboard.log
+            apps/geo-core/dashboard.err

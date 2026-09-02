@@ -1,0 +1,65 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.pyc
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+.venv/
+pip-log.txt
+
+# ===== Node / 前端依赖 =====
+node_modules/
+.node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ===== 虚拟环境 & 构建产物 =====
+*.egg-info/
+.eggs/
+dist/
+build/
+*.whl
+
+# ===== 运行时日志 & 本地数据 =====
+*.log
+dashboard.log
+dashboard.err
+*.err
+geo.db
+*.db
+*.sqlite
+*.sqlite3
+
+# ===== 密钥 / 环境配置（绝不入库） =====
+.env
+.env.*
+*.key
+*.pem
+secrets.yaml
+secrets.json
+cookies/*.json
+accounts/*.json
+
+# ===== 系统 & 编辑器 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+
+# ===== Chromium / 浏览器残留 =====
+Chromium/
+chrome-user-data/
+playwright-browsers/
+
+# ===== 第三方/嵌套仓库（packages 是已部署依赖，CI 用不到，独立仓库管理） =====
+packages/
+# 调试产物
+*.png

@@ -1,0 +1,10 @@
+# 密钥与环境
+.env
+token_cache.json
+
+# Python
+__pycache__/
+*.pyc
+*.db
+*.sqlite
+venv/
